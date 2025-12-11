@@ -43,6 +43,9 @@ function ProfilePage() {
       phoneNumber: '',
       phoneOtp: '',
       emailOtp: '',
+      govId: null,
+      userPhoto: null,
+      selfie: null,
     },
   });
 
@@ -150,7 +153,7 @@ function ProfilePage() {
                         <FormField
                             control={form.control}
                             name="govId"
-                            render={({ field: { onChange, ...fieldProps } }) => (
+                            render={({ field: { onChange, value, ...fieldProps } }) => (
                             <FormItem>
                                 <FormLabel>Government-Provided ID</FormLabel>
                                 <FormControl>
@@ -163,7 +166,7 @@ function ProfilePage() {
                         <FormField
                             control={form.control}
                             name="userPhoto"
-                            render={({ field: { onChange, ...fieldProps } }) => (
+                            render={({ field: { onChange, value, ...fieldProps } }) => (
                             <FormItem>
                                 <FormLabel>Your Photo</FormLabel>
                                 <FormControl>
