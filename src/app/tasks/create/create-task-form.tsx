@@ -613,10 +613,10 @@ export function CreateTaskForm() {
             name="budget"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{budgetType === 'fixed' ? "Fixed Price ($)" : "Hourly Rate ($/hr)"}</FormLabel>
+                <FormLabel>{budgetType === 'fixed' ? "Fixed Price (₹)" : "Hourly Rate (₹/hr)"}</FormLabel>
                 <div className="flex gap-2">
                     <FormControl>
-                      <Input type="number" placeholder={budgetType === 'fixed' ? 'e.g., 50' : 'e.g., 15'} {...field} />
+                      <Input type="number" placeholder={budgetType === 'fixed' ? 'e.g., 4000' : 'e.g., 1200'} {...field} />
                     </FormControl>
                     {budgetType === 'fixed' && (
                         <Button type="button" variant="outline" onClick={onSuggestPrice} disabled={isPending}>
@@ -640,7 +640,7 @@ export function CreateTaskForm() {
             <Sparkles className="h-4 w-4" />
             <AlertTitle className="font-headline">AI Price Suggestion</AlertTitle>
             <AlertDescription>
-                We suggest a budget of <strong>${suggestion.suggestedPrice}</strong>. {suggestion.explanation}
+                We suggest a budget of <strong>₹{suggestion.suggestedPrice}</strong>. {suggestion.explanation}
             </AlertDescription>
           </Alert>
         )}

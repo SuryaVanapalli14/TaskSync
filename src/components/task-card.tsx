@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { MapPin, Calendar, DollarSign, Users } from "lucide-react";
+import { MapPin, Calendar, Users } from "lucide-react";
 
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -52,8 +52,8 @@ export function TaskCard({ task }: TaskCardProps) {
             <span>{format(new Date(task.date), 'PPP')}</span>
           </div>
           <div className="flex items-center gap-2">
-            <DollarSign className="h-4 w-4 text-primary" />
-            <span className="font-semibold text-foreground">${task.budget}</span>
+            <span className="h-4 w-4 text-primary font-bold">₹</span>
+            <span className="font-semibold text-foreground">{task.budget}</span>
           </div>
         </div>
       </CardContent>

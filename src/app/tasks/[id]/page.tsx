@@ -1,7 +1,9 @@
+'use client';
+
 import { tasks } from "@/lib/data";
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import { MapPin, Calendar, DollarSign, Users, UserCheck } from "lucide-react";
+import { MapPin, Calendar, Users, UserCheck } from "lucide-react";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -9,8 +11,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { Separator } from "@/components/ui/separator";
+import withAuth from "@/components/withAuth";
 
-export default function TaskDetailPage({ params }: { params: { id: string } }) {
+function TaskDetailPage({ params }: { params: { id: string } }) {
   const task = tasks.find((t) => t.id === params.id);
 
   if (!task) {
@@ -64,7 +67,7 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
           <Card>
             <CardContent className="p-6 space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-3xl font-bold text-primary">${task.budget}</span>
+                <span className="text-3xl font-bold text-primary">₹{task.budget}</span>
                 <span className="text-sm text-muted-foreground">Budget</span>
               </div>
               <Separator />
@@ -136,3 +139,6 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
     </div>
   );
 }
+
+
+export default withAuth(TaskDetailPage);

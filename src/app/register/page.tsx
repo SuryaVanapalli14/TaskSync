@@ -92,6 +92,7 @@ export default function RegisterPage() {
         title: 'Registration Successful',
         description: "Welcome! Please complete your profile verification.",
       });
+      form.reset();
       router.push('/dashboard');
     } catch (error: any) {
       toast({

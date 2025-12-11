@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { Bar, BarChart, CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts"
-import { DollarSign, CheckCircle, ListTodo, Star, Activity, AlertCircle } from "lucide-react"
+import { Activity, AlertCircle, CheckCircle, ListTodo, Star } from "lucide-react"
 import Link from "next/link";
 
 import {
@@ -80,10 +80,10 @@ function DashboardPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Earnings</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <span className="h-4 w-4 text-muted-foreground font-bold">₹</span>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${analyticsData.totalEarnings.toLocaleString()}</div>
+            <div className="text-2xl font-bold">₹{analyticsData.totalEarnings.toLocaleString()}</div>
             <p className="text-xs text-muted-foreground">+20.1% from last month</p>
           </CardContent>
         </Card>
@@ -130,7 +130,7 @@ function DashboardPage() {
               <LineChart data={analyticsData.earningsOverTime} margin={{ top: 5, right: 20, left: -10, bottom: 0 }}>
                 <CartesianGrid vertical={false} />
                 <XAxis dataKey="date" tickLine={false} axisLine={false} tickMargin={8} />
-                <YAxis tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(value) => `$${value / 1000}k`} />
+                <YAxis tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(value) => `₹${value / 1000}k`} />
                 <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="line" />} />
                 <Line dataKey="earnings" type="monotone" stroke="var(--color-earnings)" strokeWidth={2} dot={true} />
               </LineChart>

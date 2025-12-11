@@ -28,7 +28,6 @@ import { useToast } from '@/hooks/use-toast';
 
 const navLinks = [
   { href: '/tasks', label: 'Tasks' },
-  { href: '/dashboard', label: 'Dashboard' },
 ];
 
 export function Header() {
@@ -113,6 +112,21 @@ export function Header() {
                       </Link>
                     </SheetClose>
                   ))}
+                   {user && (
+                     <SheetClose asChild>
+                      <Link
+                        href="/dashboard"
+                        className={cn(
+                          'transition-colors hover:text-foreground/80',
+                          pathname === "/dashboard"
+                            ? 'text-foreground'
+                            : 'text-foreground/60'
+                        )}
+                      >
+                        Dashboard
+                      </Link>
+                     </SheetClose>
+                    )}
                 </div>
               </SheetContent>
             </Sheet>
@@ -152,6 +166,12 @@ export function Header() {
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="/dashboard">
+                      <UserIcon className="mr-2 h-4 w-4" />
+                      <span>Dashboard</span>
+                    </Link>
+                  </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link href="/profile">
                       <UserIcon className="mr-2 h-4 w-4" />
