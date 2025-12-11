@@ -1,7 +1,7 @@
 'use client';
 
 import { tasks } from "@/lib/data";
-import { notFound } from "next/navigation";
+import { notFound, useParams } from "next/navigation";
 import Image from "next/image";
 import { MapPin, Calendar, Users, UserCheck } from "lucide-react";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
@@ -13,8 +13,10 @@ import { format } from "date-fns";
 import { Separator } from "@/components/ui/separator";
 import withAuth from "@/components/withAuth";
 
-function TaskDetailPage({ params }: { params: { id: string } }) {
-  const task = tasks.find((t) => t.id === params.id);
+function TaskDetailPage() {
+  const params = useParams();
+  const taskId = Array.isArray(params.id) ? params.id[0] : params.id;
+  const task = tasks.find((t) => t.id === taskId);
 
   if (!task) {
     notFound();
