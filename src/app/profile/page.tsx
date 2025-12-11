@@ -26,6 +26,12 @@ const verificationSchema = z.object({
   phoneNumber: z.string().min(10, "A valid phone number is required."),
   phoneOtp: z.string().length(6, "OTP must be 6 digits."),
   emailOtp: z.string().length(6, "OTP must be 6 digits."),
+  streetAddress: z.string().min(5, "Door/St. name is required."),
+  area: z.string().min(3, "Area is required."),
+  city: z.string().min(3, "City/Town is required."),
+  state: z.string().min(2, "State is required."),
+  country: z.string().min(2, "Country is required."),
+  pincode: z.string().min(5, "A valid PIN code is required."),
 });
 
 type VerificationFormValues = z.infer<typeof verificationSchema>;
@@ -46,6 +52,12 @@ function ProfilePage() {
       govId: null,
       userPhoto: null,
       selfie: null,
+      streetAddress: '',
+      area: '',
+      city: '',
+      state: '',
+      country: '',
+      pincode: '',
     },
   });
 
@@ -135,19 +147,108 @@ function ProfilePage() {
                 <Form {...form}>
                 <form onSubmit={form.handleSubmit(onVerificationSubmit)} className="space-y-8">
                     <FormField
-                    control={form.control}
-                    name="legalName"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>Legal Full Name</FormLabel>
-                        <FormControl>
-                            <Input placeholder="Johnathan Doe" {...field} />
-                        </FormControl>
-                        <FormDescription>As it appears on your government-issued ID.</FormDescription>
-                        <FormMessage />
-                        </FormItem>
-                    )}
+                      control={form.control}
+                      name="legalName"
+                      render={({ field }) => (
+                          <FormItem>
+                          <FormLabel>Legal Full Name</FormLabel>
+                          <FormControl>
+                              <Input placeholder="Johnathan Doe" {...field} />
+                          </FormControl>
+                          <FormDescription>As it appears on your government-issued ID.</FormDescription>
+                          <FormMessage />
+                          </FormItem>
+                      )}
                     />
+                    
+                    <Separator />
+                    <FormLabel>Address</FormLabel>
+                    <FormField
+                      control={form.control}
+                      name="streetAddress"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Door no./St. name</FormLabel>
+                          <FormControl>
+                            <Input placeholder="1234 Main St" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <div className="grid md:grid-cols-2 gap-8">
+                      <FormField
+                        control={form.control}
+                        name="area"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Area</FormLabel>
+                            <FormControl>
+                              <Input placeholder="e.g., Downtown" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="city"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>City/Town</FormLabel>
+                            <FormControl>
+                              <Input placeholder="e.g., Seattle" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <div className="grid md:grid-cols-3 gap-8">
+                       <FormField
+                        control={form.control}
+                        name="state"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>State</FormLabel>
+                            <FormControl>
+                              <Input placeholder="e.g., WA" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                       <FormField
+                        control={form.control}
+                        name="pincode"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>PIN Code</FormLabel>
+                            <FormControl>
+                              <Input placeholder="e.g., 98101" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                       <FormField
+                        control={form.control}
+                        name="country"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Country</FormLabel>
+                            <FormControl>
+                              <Input placeholder="e.g., USA" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+
+                    <Separator />
+                    <FormLabel>Document & Photo Verification</FormLabel>
 
                     <div className="grid md:grid-cols-2 gap-8">
                         <FormField
