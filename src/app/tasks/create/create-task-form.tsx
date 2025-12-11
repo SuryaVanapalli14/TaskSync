@@ -257,417 +257,423 @@ export function CreateTaskForm() {
         />
 
         <Separator />
-        <h3 className="text-lg font-medium font-headline">Visuals & Urgency</h3>
-        
-        <div className="grid md:grid-cols-2 gap-8">
-          <FormField
-            control={form.control}
-            name="photos"
-            render={({ field: { onChange, value, ...fieldProps } }) => (
-              <FormItem>
-                <FormLabel className="flex items-center gap-2">
-                  <ImageIcon /> Photos (Optional)
-                </FormLabel>
-                <FormControl>
-                  <Input type="file" accept="image/*" multiple onChange={(e) => handlePhotoChange(e, onChange)} {...fieldProps} />
-                </FormControl>
-                <FormDescription>Upload up to 5 images.</FormDescription>
-                <FormMessage />
-                {photoPreviews.length > 0 && (
-                  <div className="grid grid-cols-3 gap-2 mt-4">
-                    {photoPreviews.map((src, index) => (
-                      <div key={index} className="relative aspect-square">
-                        <Image src={src} alt={`Preview ${index + 1}`} fill className="rounded-md object-cover"/>
-                         <Button type="button" size="icon" variant="destructive" className="absolute -top-2 -right-2 h-6 w-6 rounded-full" onClick={() => removePhoto(index)}>
-                            <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="video"
-            render={({ field: { onChange, value, ...fieldProps } }) => (
-              <FormItem>
-                <FormLabel className="flex items-center gap-2">
-                  <Video /> Video (Optional)
-                </FormLabel>
-                <FormControl>
-                  <Input type="file" accept="video/mp4,video/quicktime" onChange={(e) => handleVideoChange(e, onChange)} {...fieldProps} />
-                </FormControl>
-                 <FormDescription>A short 15-second video.</FormDescription>
-                <FormMessage />
-                 {videoPreview && (
-                  <div className="relative aspect-video mt-4">
-                    <video src={videoPreview} controls className="w-full h-full rounded-md object-cover" />
-                     <Button type="button" size="icon" variant="destructive" className="absolute -top-2 -right-2 h-6 w-6 rounded-full" onClick={removeVideo}>
-                        <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                )}
-              </FormItem>
-            )}
-          />
-        </div>
 
-        <FormField
-          control={form.control}
-          name="urgency"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Urgency Level</FormLabel>
-              <RadioGroup
-                onValueChange={field.onChange}
-                defaultValue={field.value}
-                className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2"
-              >
-                <FormItem className="flex items-center space-x-3 space-y-0">
-                  <FormControl>
-                    <RadioGroupItem value="emergency" id="emergency" className="border-red-500 text-red-500" />
-                  </FormControl>
-                  <FormLabel htmlFor="emergency" className="font-normal text-red-600">
-                    Emergency (2-4 hours)
-                  </FormLabel>
-                </FormItem>
-                <FormItem className="flex items-center space-x-3 space-y-0">
-                  <FormControl>
-                    <RadioGroupItem value="same-day" id="same-day" className="border-yellow-500 text-yellow-500" />
-                  </FormControl>
-                  <FormLabel htmlFor="same-day" className="font-normal text-yellow-600">
-                    Same Day (Today)
-                  </FormLabel>
-                </FormItem>
-                <FormItem className="flex items-center space-x-3 space-y-0">
-                  <FormControl>
-                    <RadioGroupItem value="flexible" id="flexible" className="border-green-500 text-green-500" />
-                  </FormControl>
-                   <FormLabel htmlFor="flexible" className="font-normal text-green-600">
-                    Flexible (Next 3-5 days)
-                  </FormLabel>
-                </FormItem>
-              </RadioGroup>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <Separator />
-        <h3 className="text-lg font-medium font-headline">Scheduling & Duration</h3>
-
-        <FormField
-          control={form.control}
-          name="datePreference"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Preferred Date</FormLabel>
-               <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a date preference" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="specific">Specific Date & Time</SelectItem>
-                    <SelectItem value="range">Date Range</SelectItem>
-                  </SelectContent>
-                </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        
-        {datePreference === "specific" && (
-          <FormField
-            control={form.control}
-            name="specificDate"
-            render={({ field }) => (
-              <FormItem className="flex flex-col">
-                <FormLabel>Specific Date</FormLabel>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <FormControl>
-                      <Button
-                        variant={"outline"}
-                        className={cn(
-                          "w-full pl-3 text-left font-normal",
-                          !field.value && "text-muted-foreground"
-                        )}
-                      >
-                        {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
-                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={field.value}
-                      onSelect={field.onChange}
-                      disabled={(date) => date < new Date() || date < new Date("1900-01-01")}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        )}
-        
-        {datePreference === "range" && (
+        <div className="space-y-6 rounded-md border p-6 bg-secondary/30">
+          <h3 className="text-lg font-medium font-headline">Visuals & Urgency</h3>
           <div className="grid md:grid-cols-2 gap-8">
             <FormField
               control={form.control}
-              name="dateRangeStart"
-              render={({ field }) => (
-              <FormItem className="flex flex-col">
-                  <FormLabel>Start Date</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
-                          {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date < new Date()} initialFocus />
-                    </PopoverContent>
-                  </Popover>
+              name="photos"
+              render={({ field: { onChange, value, ...fieldProps } }) => (
+                <FormItem>
+                  <FormLabel className="flex items-center gap-2">
+                    <ImageIcon /> Photos (Optional)
+                  </FormLabel>
+                  <FormControl>
+                    <Input type="file" accept="image/*" multiple onChange={(e) => handlePhotoChange(e, onChange)} {...fieldProps} />
+                  </FormControl>
+                  <FormDescription>Upload up to 5 images.</FormDescription>
                   <FormMessage />
+                  {photoPreviews.length > 0 && (
+                    <div className="grid grid-cols-3 gap-2 mt-4">
+                      {photoPreviews.map((src, index) => (
+                        <div key={index} className="relative aspect-square">
+                          <Image src={src} alt={`Preview ${index + 1}`} fill className="rounded-md object-cover"/>
+                           <Button type="button" size="icon" variant="destructive" className="absolute -top-2 -right-2 h-6 w-6 rounded-full" onClick={() => removePhoto(index)}>
+                              <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </FormItem>
               )}
             />
             <FormField
               control={form.control}
-              name="dateRangeEnd"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>End Date</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
-                          {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date < (form.getValues("dateRangeStart") || new Date())} initialFocus />
-                    </PopoverContent>
-                  </Popover>
+              name="video"
+              render={({ field: { onChange, value, ...fieldProps } }) => (
+                <FormItem>
+                  <FormLabel className="flex items-center gap-2">
+                    <Video /> Video (Optional)
+                  </FormLabel>
+                  <FormControl>
+                    <Input type="file" accept="video/mp4,video/quicktime" onChange={(e) => handleVideoChange(e, onChange)} {...fieldProps} />
+                  </FormControl>
+                   <FormDescription>A short 15-second video.</FormDescription>
                   <FormMessage />
+                   {videoPreview && (
+                    <div className="relative aspect-video mt-4">
+                      <video src={videoPreview} controls className="w-full h-full rounded-md object-cover" />
+                       <Button type="button" size="icon" variant="destructive" className="absolute -top-2 -right-2 h-6 w-6 rounded-full" onClick={removeVideo}>
+                          <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
                 </FormItem>
               )}
             />
           </div>
-        )}
 
-        <FormField
-          control={form.control}
-          name="estimatedDuration"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Estimated Duration</FormLabel>
-               <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="How long will the task take?" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="< 1 hour">&lt; 1 hour</SelectItem>
-                    <SelectItem value="1-2 hours">1-2 hours</SelectItem>
-                    <SelectItem value="2-4 hours">2-4 hours</SelectItem>
-                    <SelectItem value="half-day">Half day (4-6 hours)</SelectItem>
-                    <SelectItem value="full-day">Full day (6+ hours)</SelectItem>
-                  </SelectContent>
-                </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        
-        <Separator />
-        <h3 className="text-lg font-medium font-headline">Location Details</h3>
-
-        <FormField
-          control={form.control}
-          name="approximateLocation"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Approximate Location (Public)</FormLabel>
-              <FormControl>
-                <Input placeholder="e.g., Downtown, Seattle" {...field} />
-              </FormControl>
-              <FormDescription>This will be shown on the public task post. Be general, like a neighborhood or area.</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        
-        <div className="space-y-4 rounded-md border p-4 bg-secondary/50">
-            <h4 className="font-medium flex items-center gap-2">
-                Exact Address (Hidden)
-                 <TooltipProvider>
-                    <Tooltip>
-                        <TooltipTrigger asChild><Info className="h-4 w-4 text-muted-foreground"/></TooltipTrigger>
-                        <TooltipContent><p>This is only shared with the helper you hire.</p></TooltipContent>
-                    </Tooltip>
-                 </TooltipProvider>
-            </h4>
-             <div className="grid md:grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="flatNumber"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Flat/House No.</FormLabel>
-                      <FormControl><Input placeholder="Apt #123" {...field} /></FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                 <FormField
-                  control={form.control}
-                  name="street"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Street Name</FormLabel>
-                      <FormControl><Input placeholder="Main St" {...field} /></FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-            </div>
-            <FormField
-              control={form.control}
-              name="landmark"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Landmark (Optional)</FormLabel>
-                  <FormControl><Input placeholder="Near Central Park" {...field} /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-        </div>
-
-
-        <Separator />
-        <h3 className="text-lg font-medium font-headline">Budget & Payment</h3>
-
-        <FormField
-          control={form.control}
-          name="budgetType"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Budget Type</FormLabel>
-              <RadioGroup
-                onValueChange={field.onChange}
-                defaultValue={field.value}
-                className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2"
-              >
-                <FormItem>
-                  <FormControl>
-                    <RadioGroupItem value="fixed" id="fixed" hidden/>
-                  </FormControl>
-                  <FormLabel htmlFor="fixed" className={cn("block p-4 border rounded-md cursor-pointer", budgetType === 'fixed' && "border-primary ring-2 ring-primary")}>
-                    <h4 className="font-semibold">Fixed Price</h4>
-                    <p className="text-sm text-muted-foreground">"I will pay a set amount for this task."</p>
-                  </FormLabel>
-                </FormItem>
-                 <FormItem>
-                  <FormControl>
-                    <RadioGroupItem value="hourly" id="hourly" hidden/>
-                  </FormControl>
-                  <FormLabel htmlFor="hourly" className={cn("block p-4 border rounded-md cursor-pointer", budgetType === 'hourly' && "border-primary ring-2 ring-primary")}>
-                    <h4 className="font-semibold">Hourly Rate</h4>
-                    <p className="text-sm text-muted-foreground">"I will pay based on hours worked."</p>
-                  </FormLabel>
-                </FormItem>
-                 <FormItem>
-                  <FormControl>
-                    <RadioGroupItem value="bids" id="bids" hidden/>
-                  </FormControl>
-                  <FormLabel htmlFor="bids" className={cn("block p-4 border rounded-md cursor-pointer", budgetType === 'bids' && "border-primary ring-2 ring-primary")}>
-                    <h4 className="font-semibold">Open for Bids</h4>
-                    <p className="text-sm text-muted-foreground">"Helpers can make me an offer."</p>
-                  </FormLabel>
-                </FormItem>
-              </RadioGroup>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        
-        {budgetType !== 'bids' && (
-           <FormField
+          <FormField
             control={form.control}
-            name="budget"
+            name="urgency"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{budgetType === 'fixed' ? "Fixed Price (₹)" : "Hourly Rate (₹/hr)"}</FormLabel>
-                <div className="flex gap-2">
+                <FormLabel>Urgency Level</FormLabel>
+                <RadioGroup
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2"
+                >
+                  <FormItem className="flex items-center space-x-3 space-y-0">
                     <FormControl>
-                      <Input type="number" placeholder={budgetType === 'fixed' ? 'e.g., 4000' : 'e.g., 1200'} {...field} />
+                      <RadioGroupItem value="emergency" id="emergency" className="border-red-500 text-red-500" />
                     </FormControl>
-                    {budgetType === 'fixed' && (
-                        <Button type="button" variant="outline" onClick={onSuggestPrice} disabled={isPending}>
-                            {isPending ? (
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                            ) : (
-                                <Sparkles className="h-4 w-4" />
-                            )}
-                            <span className="ml-2 hidden sm:inline">Suggest Price</span>
-                        </Button>
-                    )}
-                </div>
+                    <FormLabel htmlFor="emergency" className="font-normal text-red-600">
+                      Emergency (2-4 hours)
+                    </FormLabel>
+                  </FormItem>
+                  <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <RadioGroupItem value="same-day" id="same-day" className="border-yellow-500 text-yellow-500" />
+                    </FormControl>
+                    <FormLabel htmlFor="same-day" className="font-normal text-yellow-600">
+                      Same Day (Today)
+                    </FormLabel>
+                  </FormItem>
+                  <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <RadioGroupItem value="flexible" id="flexible" className="border-green-500 text-green-500" />
+                    </FormControl>
+                     <FormLabel htmlFor="flexible" className="font-normal text-green-600">
+                      Flexible (Next 3-5 days)
+                    </FormLabel>
+                  </FormItem>
+                </RadioGroup>
                 <FormMessage />
               </FormItem>
             )}
           />
-        )}
+        </div>
         
-        {suggestion && (
-          <Alert>
-            <Sparkles className="h-4 w-4" />
-            <AlertTitle className="font-headline">AI Price Suggestion</AlertTitle>
-            <AlertDescription>
-                We suggest a budget of <strong>₹{suggestion.suggestedPrice}</strong>. {suggestion.explanation}
-            </AlertDescription>
-          </Alert>
-        )}
+        <Separator />
 
-        <FormField
-          control={form.control}
-          name="paymentMethod"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Payment Method</FormLabel>
-               <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="How will you pay?" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="wallet">Online Wallet (Recommended)</SelectItem>
-                    <SelectItem value="cod">Cash on Delivery (COD)</SelectItem>
-                  </SelectContent>
-                </Select>
-              <FormMessage />
-            </FormItem>
+        <div className="space-y-6 rounded-md border p-6 bg-secondary/30">
+          <h3 className="text-lg font-medium font-headline">Scheduling & Duration</h3>
+          <FormField
+            control={form.control}
+            name="datePreference"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Preferred Date</FormLabel>
+                 <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a date preference" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="specific">Specific Date & Time</SelectItem>
+                      <SelectItem value="range">Date Range</SelectItem>
+                    </SelectContent>
+                  </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          {datePreference === "specific" && (
+            <FormField
+              control={form.control}
+              name="specificDate"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Specific Date</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={"outline"}
+                          className={cn(
+                            "w-full pl-3 text-left font-normal",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        disabled={(date) => date < new Date() || date < new Date("1900-01-01")}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           )}
-        />
-        
+          
+          {datePreference === "range" && (
+            <div className="grid md:grid-cols-2 gap-8">
+              <FormField
+                control={form.control}
+                name="dateRangeStart"
+                render={({ field }) => (
+                <FormItem className="flex flex-col">
+                    <FormLabel>Start Date</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
+                            {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date < new Date()} initialFocus />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="dateRangeEnd"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>End Date</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
+                            {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date < (form.getValues("dateRangeStart") || new Date())} initialFocus />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          )}
 
+          <FormField
+            control={form.control}
+            name="estimatedDuration"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Estimated Duration</FormLabel>
+                 <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="How long will the task take?" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="< 1 hour">&lt; 1 hour</SelectItem>
+                      <SelectItem value="1-2 hours">1-2 hours</SelectItem>
+                      <SelectItem value="2-4 hours">2-4 hours</SelectItem>
+                      <SelectItem value="half-day">Half day (4-6 hours)</SelectItem>
+                      <SelectItem value="full-day">Full day (6+ hours)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <Separator />
+
+        <div className="space-y-6 rounded-md border p-6 bg-secondary/30">
+          <h3 className="text-lg font-medium font-headline">Location Details</h3>
+          <FormField
+            control={form.control}
+            name="approximateLocation"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Approximate Location (Public)</FormLabel>
+                <FormControl>
+                  <Input placeholder="e.g., Downtown, Seattle" {...field} />
+                </FormControl>
+                <FormDescription>This will be shown on the public task post. Be general, like a neighborhood or area.</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <div className="space-y-4 rounded-md border p-4 bg-background">
+              <h4 className="font-medium flex items-center gap-2">
+                  Exact Address (Hidden)
+                   <TooltipProvider>
+                      <Tooltip>
+                          <TooltipTrigger asChild><Info className="h-4 w-4 text-muted-foreground"/></TooltipTrigger>
+                          <TooltipContent><p>This is only shared with the helper you hire.</p></TooltipContent>
+                      </Tooltip>
+                   </TooltipProvider>
+              </h4>
+               <div className="grid md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="flatNumber"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Flat/House No.</FormLabel>
+                        <FormControl><Input placeholder="Apt #123" {...field} /></FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                   <FormField
+                    control={form.control}
+                    name="street"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Street Name</FormLabel>
+                        <FormControl><Input placeholder="Main St" {...field} /></FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+              </div>
+              <FormField
+                control={form.control}
+                name="landmark"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Landmark (Optional)</FormLabel>
+                    <FormControl><Input placeholder="Near Central Park" {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+          </div>
+        </div>
+
+        <Separator />
+
+        <div className="space-y-6 rounded-md border p-6 bg-secondary/30">
+          <h3 className="text-lg font-medium font-headline">Budget & Payment</h3>
+          <FormField
+            control={form.control}
+            name="budgetType"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Budget Type</FormLabel>
+                <RadioGroup
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2"
+                >
+                  <FormItem>
+                    <FormControl>
+                      <RadioGroupItem value="fixed" id="fixed" hidden/>
+                    </FormControl>
+                    <FormLabel htmlFor="fixed" className={cn("block p-4 border rounded-md cursor-pointer bg-background", budgetType === 'fixed' && "border-primary ring-2 ring-primary")}>
+                      <h4 className="font-semibold">Fixed Price</h4>
+                      <p className="text-sm text-muted-foreground">"I will pay a set amount for this task."</p>
+                    </FormLabel>
+                  </FormItem>
+                   <FormItem>
+                    <FormControl>
+                      <RadioGroupItem value="hourly" id="hourly" hidden/>
+                    </FormControl>
+                    <FormLabel htmlFor="hourly" className={cn("block p-4 border rounded-md cursor-pointer bg-background", budgetType === 'hourly' && "border-primary ring-2 ring-primary")}>
+                      <h4 className="font-semibold">Hourly Rate</h4>
+                      <p className="text-sm text-muted-foreground">"I will pay based on hours worked."</p>
+                    </FormLabel>
+                  </FormItem>
+                   <FormItem>
+                    <FormControl>
+                      <RadioGroupItem value="bids" id="bids" hidden/>
+                    </FormControl>
+                    <FormLabel htmlFor="bids" className={cn("block p-4 border rounded-md cursor-pointer bg-background", budgetType === 'bids' && "border-primary ring-2 ring-primary")}>
+                      <h4 className="font-semibold">Open for Bids</h4>
+                      <p className="text-sm text-muted-foreground">"Helpers can make me an offer."</p>
+                    </FormLabel>
+                  </FormItem>
+                </RadioGroup>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          {budgetType !== 'bids' && (
+             <FormField
+              control={form.control}
+              name="budget"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{budgetType === 'fixed' ? "Fixed Price (₹)" : "Hourly Rate (₹/hr)"}</FormLabel>
+                  <div className="flex gap-2">
+                      <FormControl>
+                        <Input type="number" placeholder={budgetType === 'fixed' ? 'e.g., 4000' : 'e.g., 1200'} {...field} />
+                      </FormControl>
+                      {budgetType === 'fixed' && (
+                          <Button type="button" variant="outline" onClick={onSuggestPrice} disabled={isPending}>
+                              {isPending ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                              ) : (
+                                  <Sparkles className="h-4 w-4" />
+                              )}
+                              <span className="ml-2 hidden sm:inline">Suggest Price</span>
+                          </Button>
+                      )}
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
+          
+          {suggestion && (
+            <Alert>
+              <Sparkles className="h-4 w-4" />
+              <AlertTitle className="font-headline">AI Price Suggestion</AlertTitle>
+              <AlertDescription>
+                  We suggest a budget of <strong>₹{suggestion.suggestedPrice}</strong>. {suggestion.explanation}
+              </AlertDescription>
+            </Alert>
+          )}
+
+          <FormField
+            control={form.control}
+            name="paymentMethod"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Payment Method</FormLabel>
+                 <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="How will you pay?" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="wallet">Online Wallet (Recommended)</SelectItem>
+                      <SelectItem value="cod">Cash on Delivery (COD)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+        
         <Button type="submit" size="lg" className="w-full">
           Post Task
         </Button>

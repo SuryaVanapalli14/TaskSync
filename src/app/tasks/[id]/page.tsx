@@ -12,9 +12,11 @@ import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { Separator } from "@/components/ui/separator";
 import withAuth from "@/components/withAuth";
+import { useToast } from "@/hooks/use-toast";
 
 function TaskDetailPage() {
   const params = useParams();
+  const { toast } = useToast();
   const taskId = Array.isArray(params.id) ? params.id[0] : params.id;
   const task = tasks.find((t) => t.id === taskId);
 
@@ -24,6 +26,15 @@ function TaskDetailPage() {
 
   const image = PlaceHolderImages.find((p) => p.id === task.image);
   const requesterAvatar = PlaceHolderImages.find(p => p.id === task.requester.avatar);
+
+  const handleApply = () => {
+    // In a real app, this would trigger a Firestore update.
+    // For now, we'll just show a confirmation toast.
+    toast({
+      title: "Application Sent!",
+      description: `You have successfully applied for "${task.title}".`,
+    });
+  };
 
   return (
     <div className="container py-12">
@@ -96,7 +107,7 @@ function TaskDetailPage() {
                   </div>
                 </div>
               </div>
-              <Button size="lg" className="w-full">
+              <Button size="lg" className="w-full" onClick={handleApply}>
                 <UserCheck className="mr-2 h-5 w-5" />
                 Apply for this task
               </Button>
