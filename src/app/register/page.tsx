@@ -34,15 +34,18 @@ import {
   RadioGroupItem,
 } from '@/components/ui/radio-group';
 import { useToast } from '@/hooks/use-toast';
+import { LiveSelfie } from './live-selfie';
 
 const formSchema = z.object({
-  firstName: z.string().min(1, 'First name is required.'),
-  lastName: z.string().min(1, 'Last name is required.'),
+  legalFullName: z.string().min(1, 'Full legal name is required.'),
   email: z.string().email('Invalid email address.'),
   password: z.string().min(6, 'Password must be at least 6 characters.'),
   role: z.enum(['helper', 'requester'], {
     required_error: 'You must select a role.',
   }),
+  govtId: z.any().optional(),
+  userPhoto: z.any().optional(),
+  selfie: z.any().optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -55,8 +58,7 @@ export default function RegisterPage() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      firstName: '',
-      lastName: '',
+      legalFullName: '',
       email: '',
       password: '',
       role: 'helper',
@@ -71,14 +73,14 @@ export default function RegisterPage() {
         values.password
       );
       await updateProfile(userCredential.user, {
-        displayName: `${values.firstName} ${values.lastName}`,
+        displayName: values.legalFullName,
       });
       
-      // Here you would typically also save the user's role to Firestore
+      // Here you would typically also save the user's role and verification documents to Firestore
       
       toast({
         title: 'Registration Successful',
-        description: "You've successfully created an account.",
+        description: "You've successfully created an account. Please await verification.",
       });
       router.push('/dashboard');
     } catch (error: any) {
@@ -95,10 +97,10 @@ export default function RegisterPage() {
     try {
       await signInWithPopup(auth, provider);
        // Here you would typically check if the user is new and if so,
-       // prompt them for their role and save it to Firestore.
+       // prompt them for their role and verification documents, then save to Firestore.
       toast({
         title: 'Sign Up Successful',
-        description: 'Welcome to TaskSync!',
+        description: 'Welcome to TaskSync! Please complete your profile for verification.',
       });
       router.push('/dashboard');
     } catch (error: any) {
@@ -112,44 +114,29 @@ export default function RegisterPage() {
 
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-10rem)] py-12">
-      <Card className="mx-auto max-w-sm w-full">
+      <Card className="mx-auto max-w-lg w-full">
         <CardHeader>
-          <CardTitle className="text-xl font-headline">Sign Up</CardTitle>
+          <CardTitle className="text-xl font-headline">Create a Secure Account</CardTitle>
           <CardDescription>
-            Enter your information to create an account
+            Your safety is our priority. Please provide the following information for verification.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleRegister)} className="grid gap-4">
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="firstName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>First name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Max" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="lastName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Last name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Robinson" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+              <FormField
+                control={form.control}
+                name="legalFullName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Legal Full Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="John Doe" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <FormField
                 control={form.control}
                 name="email"
@@ -180,12 +167,57 @@ export default function RegisterPage() {
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={form.control}
+                name="govtId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Government-provided ID</FormLabel>
+                    <FormControl>
+                      <Input type="file" accept="image/*" onChange={(e) => field.onChange(e.target.files?.[0])} />
+                    </FormControl>
+                    <FormDescription>For cross-checking purposes. Your data is kept private.</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="userPhoto"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Clear Photo of Your Face</FormLabel>
+                    <FormControl>
+                       <Input type="file" accept="image/*" onChange={(e) => field.onChange(e.target.files?.[0])} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="selfie"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Live Selfie Verification</FormLabel>
+                    <FormControl>
+                      <LiveSelfie onSelfieTaken={field.onChange} />
+                    </FormControl>
+                    <FormDescription>To verify you are a real person.</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <FormField
                 control={form.control}
                 name="role"
                 render={({ field }) => (
                   <FormItem className="space-y-3">
-                    <FormLabel>I am a...</FormLabel>
+                    <FormLabel>I want to...</FormLabel>
                     <FormControl>
                       <RadioGroup
                         onValueChange={field.onChange}
@@ -196,13 +228,13 @@ export default function RegisterPage() {
                           <FormControl>
                             <RadioGroupItem value="helper" id="r-helper" />
                           </FormControl>
-                          <FormLabel htmlFor="r-helper" className="font-normal">Helper</FormLabel>
+                          <FormLabel htmlFor="r-helper" className="font-normal">Find work (Helper)</FormLabel>
                         </FormItem>
                         <FormItem className="flex items-center space-x-2">
                           <FormControl>
                             <RadioGroupItem value="requester" id="r-requester" />
                           </FormControl>
-                          <FormLabel htmlFor="r-requester" className="font-normal">Requester</FormLabel>
+                          <FormLabel htmlFor="r-requester" className="font-normal">Post tasks (Requester)</FormLabel>
                         </FormItem>
                       </RadioGroup>
                     </FormControl>
