@@ -1,3 +1,112 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "hero-background",
+      "description": "A vibrant community of helpers and requesters collaborating.",
+      "imageUrl": "https://images.unsplash.com/photo-1699371829060-98663499e437?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxjb21tdW5pdHklMjBjb2xsYWJvcmF0aW9ufGVufDB8fHx8MTc2NTQ1MTM0MHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "community collaboration"
+    },
+    {
+      "id": "feature-marketplace",
+      "description": "A person browsing tasks on a tablet.",
+      "imageUrl": "https://images.unsplash.com/photo-1726406814732-dc5aa0c9df1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxicm93c2luZyUyMHRhc2tzfGVufDB8fHx8MTc2NTQ1MTM0MHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "browsing tasks"
+    },
+    {
+      "id": "feature-ai",
+      "description": "An abstract representation of artificial intelligence.",
+      "imageUrl": "https://images.unsplash.com/photo-1694903110330-cc64b7e1d21d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxhcnRpZmljaWFsJTIwaW50ZWxsaWdlbmNlfGVufDB8fHx8MTc2NTM1NTUwOXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "artificial intelligence"
+    },
+    {
+      "id": "feature-dashboard",
+      "description": "A clean and modern analytics dashboard interface.",
+      "imageUrl": "https://images.unsplash.com/photo-1686061594225-3e92c0cd51b0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxhbmFseXRpY3MlMjBkYXNoYm9hcmR8ZW58MHx8fHwxNzY1NDQ3MTQxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "analytics dashboard"
+    },
+    {
+      "id": "testimonial-1",
+      "description": "A satisfied user smiling.",
+      "imageUrl": "https://images.unsplash.com/photo-1535295972055-1c762f4483e5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxoYXBweSUyMHBlcnNvbnxlbnwwfHx8fDE3NjU0MDI0OTh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "happy person"
+    },
+    {
+      "id": "testimonial-2",
+      "description": "A professional helper giving a thumbs up.",
+      "imageUrl": "https://images.unsplash.com/photo-1522202757859-7472b0973c69?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxwcm9mZXNzaW9uYWwlMjB3b3JrZXJ8ZW58MHx8fHwxNzY1NDUxMzQwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "professional worker"
+    },
+    {
+      "id": "testimonial-3",
+      "description": "A person looking pleased with the service.",
+      "imageUrl": "https://images.unsplash.com/photo-1753161022993-d197628688d7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxzYXRpc2ZpZWQlMjBjdXN0b21lcnxlbnwwfHx8fDE3NjU0NTAwNjZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "satisfied customer"
+    },
+    {
+      "id": "task-gardening",
+      "description": "A beautiful garden needing maintenance.",
+      "imageUrl": "https://images.unsplash.com/photo-1535090467336-9501f96eef89?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxnYXJkZW4lMjB3b3JrfGVufDB8fHx8MTc2NTQ1MTM0MHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "garden work"
+    },
+    {
+      "id": "task-moving",
+      "description": "Moving boxes stacked in a room.",
+      "imageUrl": "https://images.unsplash.com/photo-1586781383963-8e66f88077ec?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxtb3ZpbmclMjBib3hlc3xlbnwwfHx8fDE3NjU0NDk5NTF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "moving boxes"
+    },
+    {
+      "id": "task-cleaning",
+      "description": "A sparkling clean living room.",
+      "imageUrl": "https://images.unsplash.com/photo-1580237072617-771c3ecc4a24?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxjbGVhbiUyMGhvdXNlfGVufDB8fHx8MTc2NTQ1MTMzOXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "clean house"
+    },
+    {
+      "id": "task-dogwalking",
+      "description": "A happy dog on a leash in a park.",
+      "imageUrl": "https://images.unsplash.com/photo-1608363789080-2d1f019445fa?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxkb2clMjB3YWxraW5nfGVufDB8fHx8MTc2NTQ1MTMzOXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "dog walking"
+    },
+    {
+      "id": "task-painting",
+      "description": "A person painting a wall with a roller.",
+      "imageUrl": "https://images.unsplash.com/photo-1615184697985-c9bde1b07da7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHx3YWxsJTIwcGFpbnRpbmd8ZW58MHx8fHwxNzY1MzYwMzc3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "wall painting"
+    },
+    {
+      "id": "user-avatar-1",
+      "description": "Avatar for user 1",
+      "imageUrl": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjUzNDA5MTh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person portrait"
+    },
+    {
+      "id": "user-avatar-2",
+      "description": "Avatar for user 2",
+      "imageUrl": "https://images.unsplash.com/photo-1590086782792-42dd2350140d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjUzNDA5MTh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person portrait"
+    },
+    {
+      "id": "user-avatar-3",
+      "description": "Avatar for user 3",
+      "imageUrl": "https://images.unsplash.com/photo-1600180758890-6b94519a8ba6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjUzNDA5MTh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person portrait"
+    },
+    {
+      "id": "user-avatar-4",
+      "description": "Avatar for user 4",
+      "imageUrl": "https://images.unsplash.com/photo-1521119989659-a83eee488004?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjUzNDA5MTh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person portrait"
+    },
+    {
+      "id": "user-avatar-5",
+      "description": "Avatar for user 5",
+      "imageUrl": "https://images.unsplash.com/photo-1600180758890-6b94519a8ba6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjUzNDA5MTh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person portrait"
+    },
+    {
+      "id": "user-avatar-6",
+      "description": "Avatar for user 6",
+      "imageUrl": "https://images.unsplash.com/photo-1590086782792-42dd2350140d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjUzNDA5MTh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person portrait"
+    }
+  ]
 }
