@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { Bar, BarChart, CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts"
 import { DollarSign, CheckCircle, ListTodo, Star, Activity } from "lucide-react"
 
@@ -18,6 +19,7 @@ import {
 } from "@/components/ui/chart"
 import { analyticsData } from "@/lib/data"
 import withAuth from "@/components/withAuth"
+import { useUser } from "@/firebase"
 
 const chartConfig: ChartConfig = {
   earnings: {
@@ -31,11 +33,29 @@ const chartConfig: ChartConfig = {
 }
 
 function DashboardPage() {
+  const { user } = useUser();
+  const [greeting, setGreeting] = useState("Hello");
+
+  useEffect(() => {
+    const hour = new Date().getHours();
+    if (hour < 12) {
+      setGreeting("Good morning");
+    } else if (hour < 18) {
+      setGreeting("Good afternoon");
+    } else {
+      setGreeting("Good evening");
+    }
+  }, []);
+
+
   return (
     <div className="container py-8">
-      <h1 className="text-3xl font-bold font-headline tracking-tight mb-8">
-        Analytics Dashboard
-      </h1>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold font-headline tracking-tight">
+          {greeting}, {user?.displayName?.split(' ')[0] || 'welcome back'}!
+        </h1>
+        <p className="text-muted-foreground">Here's a summary of your activity.</p>
+      </div>
       
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
         <Card>
