@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react"
 import { Bar, BarChart, CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts"
-import { DollarSign, CheckCircle, ListTodo, Star, Activity } from "lucide-react"
+import { DollarSign, CheckCircle, ListTodo, Star, Activity, AlertCircle } from "lucide-react"
+import Link from "next/link";
 
 import {
   Card,
@@ -17,6 +18,8 @@ import {
   ChartTooltipContent,
   ChartConfig,
 } from "@/components/ui/chart"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Button } from "@/components/ui/button"
 import { analyticsData } from "@/lib/data"
 import withAuth from "@/components/withAuth"
 import { useUser } from "@/firebase"
@@ -35,6 +38,9 @@ const chartConfig: ChartConfig = {
 function DashboardPage() {
   const { user } = useUser();
   const [greeting, setGreeting] = useState("Hello");
+
+  // This is a mock verification status. In a real app, you'd fetch this from your backend/database.
+  const [isVerified, setIsVerified] = useState(false);
 
   useEffect(() => {
     const hour = new Date().getHours();
@@ -57,6 +63,19 @@ function DashboardPage() {
         <p className="text-muted-foreground">Here's a summary of your activity.</p>
       </div>
       
+      {!isVerified && (
+        <Alert className="mb-8" variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Verification Required</AlertTitle>
+          <AlertDescription>
+            Your account is not yet verified. Please complete your profile to access all features.
+            <Button asChild variant="link" className="p-0 h-auto ml-2">
+              <Link href="/profile">Go to Profile</Link>
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
+
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

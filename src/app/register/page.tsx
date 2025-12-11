@@ -32,7 +32,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
-import { Icons } from '@/components/icons';
 
 const formSchema = z
   .object({
@@ -89,13 +88,11 @@ export default function RegisterPage() {
         displayName: `${values.firstName} ${values.lastName}`,
       });
       
-      // The new user would now be redirected to the internal verification flow.
-      // For now, we'll redirect to the dashboard.
       toast({
         title: 'Registration Successful',
-        description: "Your account has been created. Please complete the verification steps.",
+        description: "Welcome! Please complete your profile verification.",
       });
-      router.push('/dashboard'); // This should eventually go to a /verify page
+      router.push('/dashboard');
     } catch (error: any) {
       toast({
         variant: 'destructive',
@@ -109,11 +106,9 @@ export default function RegisterPage() {
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider);
-       // The new user would now be redirected to the internal verification flow.
-       // For now, we'll redirect to the dashboard.
       toast({
         title: 'Sign Up Successful',
-        description: 'Welcome! Please complete your profile for verification.',
+        description: 'Welcome! Please complete your profile verification.',
       });
       router.push('/dashboard');
     } catch (error: any) {
