@@ -17,6 +17,7 @@ import {
   ChartConfig,
 } from "@/components/ui/chart"
 import { analyticsData } from "@/lib/data"
+import withAuth from "@/components/withAuth"
 
 const chartConfig: ChartConfig = {
   earnings: {
@@ -29,7 +30,7 @@ const chartConfig: ChartConfig = {
   },
 }
 
-export default function DashboardPage() {
+function DashboardPage() {
   return (
     <div className="container py-8">
       <h1 className="text-3xl font-bold font-headline tracking-tight mb-8">
@@ -119,3 +120,5 @@ export default function DashboardPage() {
     </div>
   )
 }
+
+export default withAuth(DashboardPage);
