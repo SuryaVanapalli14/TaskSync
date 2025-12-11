@@ -7,7 +7,6 @@ import {
   updateProfile,
   GoogleAuthProvider,
   signInWithPopup,
-  AuthError,
 } from 'firebase/auth';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -97,10 +96,8 @@ export default function RegisterPage() {
       router.push('/login');
     } catch (error: any) {
       let description = 'An unexpected error occurred. Please try again.';
-      if (error instanceof AuthError) {
-        if (error.code === 'auth/email-already-in-use') {
-          description = 'This email address is already in use. Please use a different email or log in.';
-        }
+      if (error.code === 'auth/email-already-in-use') {
+        description = 'This email address is already in use. Please use a different email or log in.';
       }
       toast({
         variant: 'destructive',
