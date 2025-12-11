@@ -13,9 +13,9 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { LiveSelfie } from '../register/live-selfie'; // Re-using the selfie component
+import { LiveSelfie } from '../register/live-selfie';
 import { useToast } from '@/hooks/use-toast';
-import { ShieldCheck } from 'lucide-react';
+import { ShieldCheck, MapPin, Briefcase, FileText, FolderKanban } from 'lucide-react';
 
 
 const verificationSchema = z.object({
@@ -32,6 +32,9 @@ const verificationSchema = z.object({
   state: z.string().min(2, "State is required."),
   country: z.string().min(2, "Country is required."),
   pincode: z.string().min(5, "A valid PIN code is required."),
+  proofOfAddress: z.any().refine(file => file, "Proof of address is required."),
+  certifications: z.any().optional(),
+  portfolio: z.any().optional(),
 });
 
 type VerificationFormValues = z.infer<typeof verificationSchema>;
@@ -58,6 +61,9 @@ function ProfilePage() {
       state: '',
       country: '',
       pincode: '',
+      proofOfAddress: null,
+      certifications: null,
+      portfolio: null,
     },
   });
 
@@ -162,6 +168,66 @@ function ProfilePage() {
                     />
                     
                     <Separator />
+                    <h3 className="text-lg font-medium font-headline flex items-center gap-2"><MapPin className="h-5 w-5" /> Contact & Location Verification</h3>
+
+                    <CardDescription>We'll send a one-time password to your phone and email to confirm them.</CardDescription>
+                    
+                     <div className="grid md:grid-cols-2 gap-8 items-start">
+                        <FormField
+                            control={form.control}
+                            name="phoneNumber"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel>Phone Number</FormLabel>
+                                <FormControl>
+                                    <Input type="tel" placeholder="(555) 555-5555" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="phoneOtp"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Phone OTP</FormLabel>
+                                    <div className="flex gap-2">
+                                        <FormControl>
+                                            <Input placeholder="123456" {...field} />
+                                        </FormControl>
+                                        <Button type="button" variant="secondary">Send OTP</Button>
+                                    </div>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+
+                     <div className="grid md:grid-cols-2 gap-8 items-start">
+                        <FormItem>
+                            <FormLabel>Email Address</FormLabel>
+                            <Input value={user.email || ''} readOnly disabled />
+                        </FormItem>
+
+                        <FormField
+                            control={form.control}
+                            name="emailOtp"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Email OTP</FormLabel>
+                                    <div className="flex gap-2">
+                                        <FormControl>
+                                            <Input placeholder="123456" {...field} />
+                                        </FormControl>
+                                        <Button type="button" variant="secondary">Send OTP</Button>
+                                    </div>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+                    
                     <FormLabel>Address</FormLabel>
                     <FormField
                       control={form.control}
@@ -246,9 +312,33 @@ function ProfilePage() {
                       />
                     </div>
 
+                    <div className="grid md:grid-cols-2 gap-8 items-start">
+                        <FormField
+                            control={form.control}
+                            name="proofOfAddress"
+                            render={({ field: { onChange, value, ...fieldProps } }) => (
+                            <FormItem>
+                                <FormLabel>Proof of Address</FormLabel>
+                                <FormControl>
+                                    <Input type="file" accept="image/*,.pdf" onChange={(e) => onChange(e.target.files?.[0])} {...fieldProps} />
+                                </FormControl>
+                                <FormDescription>Utility bill, bank statement, or rental agreement.</FormDescription>
+                                <FormMessage />
+                            </FormItem>
+                            )}
+                        />
+                        <FormItem>
+                           <FormLabel>Live GPS Capture</FormLabel>
+                           <Button type="button" variant="outline" className="w-full">
+                               <MapPin className="mr-2 h-4 w-4" />
+                               Capture Current Location
+                           </Button>
+                           <FormDescription>Verify you are at your stated address.</FormDescription>
+                        </FormItem>
+                    </div>
 
                     <Separator />
-                    <FormLabel>Document & Photo Verification</FormLabel>
+                    <h3 className="text-lg font-medium font-headline flex items-center gap-2"><Briefcase className="h-5 w-5" /> Professional Credibility</h3>
 
                     <div className="grid md:grid-cols-2 gap-8">
                         <FormField
@@ -294,62 +384,33 @@ function ProfilePage() {
                         )}
                     />
 
-                    <Separator />
-
-                    <CardDescription>We'll send a one-time password to your phone and email to confirm them.</CardDescription>
-                    
-                     <div className="grid md:grid-cols-2 gap-8 items-start">
+                    <div className="grid md:grid-cols-2 gap-8">
                         <FormField
                             control={form.control}
-                            name="phoneNumber"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>Phone Number</FormLabel>
+                            name="certifications"
+                            render={({ field: { onChange, value, ...fieldProps } }) => (
+                            <FormItem>
+                                <FormLabel className="flex items-center gap-2"><FileText /> Certifications/Licenses (Optional)</FormLabel>
                                 <FormControl>
-                                    <Input type="tel" placeholder="(555) 555-5555" {...field} />
+                                    <Input type="file" multiple accept="image/*,.pdf" onChange={(e) => onChange(e.target.files)} {...fieldProps} />
                                 </FormControl>
+                                <FormDescription>For electricians, plumbers, etc.</FormDescription>
                                 <FormMessage />
-                                </FormItem>
+                            </FormItem>
                             )}
                         />
                         <FormField
                             control={form.control}
-                            name="phoneOtp"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Phone OTP</FormLabel>
-                                    <div className="flex gap-2">
-                                        <FormControl>
-                                            <Input placeholder="123456" {...field} />
-                                        </FormControl>
-                                        <Button type="button" variant="secondary">Send OTP</Button>
-                                    </div>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                    </div>
-
-                     <div className="grid md:grid-cols-2 gap-8 items-start">
-                        <FormItem>
-                            <FormLabel>Email Address</FormLabel>
-                            <Input value={user.email || ''} readOnly disabled />
-                        </FormItem>
-
-                        <FormField
-                            control={form.control}
-                            name="emailOtp"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Email OTP</FormLabel>
-                                    <div className="flex gap-2">
-                                        <FormControl>
-                                            <Input placeholder="123456" {...field} />
-                                        </FormControl>
-                                        <Button type="button" variant="secondary">Send OTP</Button>
-                                    </div>
-                                    <FormMessage />
-                                </FormItem>
+                            name="portfolio"
+                            render={({ field: { onChange, value, ...fieldProps } }) => (
+                            <FormItem>
+                                <FormLabel className="flex items-center gap-2"><FolderKanban /> Portfolio/Past Work (Optional)</FormLabel>
+                                <FormControl>
+                                    <Input type="file" multiple accept="image/*" onChange={(e) => onChange(e.target.files)} {...fieldProps} />
+                                </FormControl>
+                                <FormDescription>Showcase your previous work.</FormDescription>
+                                <FormMessage />
+                            </FormItem>
                             )}
                         />
                     </div>

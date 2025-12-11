@@ -19,4 +19,6 @@ export type Task = {
   requester: User;
   applicants: User[];
   image: (typeof PlaceHolderImages)[number]['id'];
+  urgency: 'Emergency' | 'Same Day' | 'Flexible';
+  distance: number;
 };
