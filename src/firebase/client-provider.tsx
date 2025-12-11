@@ -1,15 +1,16 @@
 // src/firebase/client-provider.tsx
 'use client';
-import { FirebaseProvider, useFirebase } from '@/firebase/provider';
+import { FirebaseProvider } from '@/firebase/provider';
+import { initializeFirebase } from '@/firebase';
 import React, { useEffect, useState } from 'react';
-import { initializeFirebase } from '.';
+
+const { firebaseApp, auth, firestore } = initializeFirebase();
 
 export function FirebaseClientProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { firebaseApp, auth, firestore } = useFirebase();
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
