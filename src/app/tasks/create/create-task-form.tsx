@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { format } from "date-fns";
-import { Calendar as CalendarIcon, Sparkles, AlertCircle, Loader2 } from "lucide-react";
+import { Calendar as CalendarIcon, Sparkles, Loader2, Image as ImageIcon, Video, Info } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -30,16 +30,34 @@ import { handlePriceSuggestion } from "./actions";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import type { SuggestTaskPriceOutput } from "@/ai/flows/suggest-task-price";
+import { Separator } from "@/components/ui/separator";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const formSchema = z.object({
-  title: z.string().min(5, "Title must be at least 5 characters long."),
+  title: z.string().min(5, "Title must be at least 5 characters long.").max(50, "Title must be 50 characters or less."),
   description: z.string().min(20, "Description must be at least 20 characters long."),
-  location: z.string().min(3, "Location is required."),
-  date: z.date({
-    required_error: "A date for the task is required.",
-  }),
-  budget: z.coerce.number().min(5, "Budget must be at least $5."),
-  workers: z.coerce.number().int().min(1, "At least 1 worker is required."),
+  photos: z.any().optional(),
+  video: z.any().optional(),
+  urgency: z.enum(["emergency", "same-day", "flexible"]),
+  datePreference: z.enum(["specific", "range"]),
+  specificDate: z.date().optional(),
+  dateRangeStart: z.date().optional(),
+  dateRangeEnd: z.date().optional(),
+  estimatedDuration: z.string().min(1, "Please select an estimated duration."),
+  
+  // Hidden Address
+  flatNumber: z.string().min(1, "Flat/House number is required."),
+  street: z.string().min(3, "Street is required."),
+  landmark: z.string().optional(),
+  
+  // Public Location
+  approximateLocation: z.string().min(3, "Approximate location is required for public view."),
+
+  budgetType: z.enum(["fixed", "hourly", "bids"]),
+  budget: z.coerce.number().optional(),
+  paymentMethod: z.enum(["cod", "wallet"]),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -54,11 +72,20 @@ export function CreateTaskForm() {
     defaultValues: {
       title: "",
       description: "",
-      location: "",
-      budget: 50,
-      workers: 1,
+      urgency: "flexible",
+      datePreference: "specific",
+      estimatedDuration: "",
+      flatNumber: "",
+      street: "",
+      landmark: "",
+      approximateLocation: "",
+      budgetType: "fixed",
+      paymentMethod: "wallet",
     },
   });
+
+  const datePreference = form.watch("datePreference");
+  const budgetType = form.watch("budgetType");
 
   function onSubmit(values: FormValues) {
     console.log(values);
@@ -73,14 +100,14 @@ export function CreateTaskForm() {
   function onSuggestPrice() {
     startTransition(async () => {
       const description = form.getValues("description");
-      const location = form.getValues("location");
-      const date = form.getValues("date");
+      const location = form.getValues("approximateLocation");
+      const date = form.getValues("specificDate");
 
       if (!description || !location || !date) {
         toast({
           variant: "destructive",
           title: "Missing Information",
-          description: "Please provide a description, location, and date to get a price suggestion.",
+          description: "Please provide a description, approximate location, and a specific date to get a price suggestion.",
         });
         return;
       }
@@ -133,43 +160,130 @@ export function CreateTaskForm() {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description</FormLabel>
+              <FormLabel>Detailed Description</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Describe the task in detail..."
+                  placeholder="Describe the task in detail. What needs to be done? Any special requirements?"
                   className="min-h-[120px]"
                   {...field}
                 />
               </FormControl>
-              <FormDescription>
-                The more detail you provide, the better the price suggestion will be.
-              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
 
+        <Separator />
+        <h3 className="text-lg font-medium font-headline">Visuals & Urgency</h3>
+        
         <div className="grid md:grid-cols-2 gap-8">
           <FormField
             control={form.control}
-            name="location"
-            render={({ field }) => (
+            name="photos"
+            render={({ field: { onChange, ...fieldProps } }) => (
               <FormItem>
-                <FormLabel>Location</FormLabel>
+                <FormLabel className="flex items-center gap-2">
+                  <ImageIcon /> Photos (Optional)
+                </FormLabel>
                 <FormControl>
-                  <Input placeholder="e.g., Downtown, Seattle" {...field} />
+                  <Input type="file" accept="image/*" multiple onChange={(e) => onChange(e.target.files)} {...fieldProps} />
                 </FormControl>
+                <FormDescription>Upload up to 5 images.</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
           />
-
           <FormField
             control={form.control}
-            name="date"
+            name="video"
+            render={({ field: { onChange, ...fieldProps } }) => (
+              <FormItem>
+                <FormLabel className="flex items-center gap-2">
+                  <Video /> Video (Optional)
+                </FormLabel>
+                <FormControl>
+                  <Input type="file" accept="video/mp4,video/quicktime" onChange={(e) => onChange(e.target.files?.[0])} {...fieldProps} />
+                </FormControl>
+                 <FormDescription>A short 15-second video.</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <FormField
+          control={form.control}
+          name="urgency"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Urgency Level</FormLabel>
+              <RadioGroup
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+                className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2"
+              >
+                <FormItem className="flex items-center space-x-3 space-y-0">
+                  <FormControl>
+                    <RadioGroupItem value="emergency" id="emergency" className="border-red-500 text-red-500" />
+                  </FormControl>
+                  <FormLabel htmlFor="emergency" className="font-normal text-red-600">
+                    Emergency (2-4 hours)
+                  </FormLabel>
+                </FormItem>
+                <FormItem className="flex items-center space-x-3 space-y-0">
+                  <FormControl>
+                    <RadioGroupItem value="same-day" id="same-day" className="border-yellow-500 text-yellow-500" />
+                  </FormControl>
+                  <FormLabel htmlFor="same-day" className="font-normal text-yellow-600">
+                    Same Day (Today)
+                  </FormLabel>
+                </FormItem>
+                <FormItem className="flex items-center space-x-3 space-y-0">
+                  <FormControl>
+                    <RadioGroupItem value="flexible" id="flexible" className="border-green-500 text-green-500" />
+                  </FormControl>
+                   <FormLabel htmlFor="flexible" className="font-normal text-green-600">
+                    Flexible (Next 3-5 days)
+                  </FormLabel>
+                </FormItem>
+              </RadioGroup>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <Separator />
+        <h3 className="text-lg font-medium font-headline">Scheduling & Duration</h3>
+
+        <FormField
+          control={form.control}
+          name="datePreference"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Preferred Date</FormLabel>
+               <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a date preference" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="specific">Specific Date & Time</SelectItem>
+                    <SelectItem value="range">Date Range</SelectItem>
+                  </SelectContent>
+                </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        {datePreference === "specific" && (
+          <FormField
+            control={form.control}
+            name="specificDate"
             render={({ field }) => (
               <FormItem className="flex flex-col">
-                <FormLabel>Date</FormLabel>
+                <FormLabel>Specific Date</FormLabel>
                 <Popover>
                   <PopoverTrigger asChild>
                     <FormControl>
@@ -180,11 +294,7 @@ export function CreateTaskForm() {
                           !field.value && "text-muted-foreground"
                         )}
                       >
-                        {field.value ? (
-                          format(field.value, "PPP")
-                        ) : (
-                          <span>Pick a date</span>
-                        )}
+                        {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
                         <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                       </Button>
                     </FormControl>
@@ -203,46 +313,224 @@ export function CreateTaskForm() {
               </FormItem>
             )}
           />
+        )}
+        
+        {datePreference === "range" && (
+          <div className="grid md:grid-cols-2 gap-8">
+            <FormField
+              control={form.control}
+              name="dateRangeStart"
+              render={({ field }) => (
+              <FormItem className="flex flex-col">
+                  <FormLabel>Start Date</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
+                          {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date < new Date()} initialFocus />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="dateRangeEnd"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>End Date</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
+                          {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date < (form.getValues("dateRangeStart") || new Date())} initialFocus />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        )}
+
+        <FormField
+          control={form.control}
+          name="estimatedDuration"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Estimated Duration</FormLabel>
+               <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="How long will the task take?" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="< 1 hour">&lt; 1 hour</SelectItem>
+                    <SelectItem value="1-2 hours">1-2 hours</SelectItem>
+                    <SelectItem value="2-4 hours">2-4 hours</SelectItem>
+                    <SelectItem value="half-day">Half day (4-6 hours)</SelectItem>
+                    <SelectItem value="full-day">Full day (6+ hours)</SelectItem>
+                  </SelectContent>
+                </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <Separator />
+        <h3 className="text-lg font-medium font-headline">Location Details</h3>
+
+        <FormField
+          control={form.control}
+          name="approximateLocation"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Approximate Location (Public)</FormLabel>
+              <FormControl>
+                <Input placeholder="e.g., Downtown, Seattle" {...field} />
+              </FormControl>
+              <FormDescription>This will be shown on the public task post. Be general, like a neighborhood or area.</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <div className="space-y-4 rounded-md border p-4 bg-secondary/50">
+            <h4 className="font-medium flex items-center gap-2">
+                Exact Address (Hidden)
+                 <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild><Info className="h-4 w-4 text-muted-foreground"/></TooltipTrigger>
+                        <TooltipContent><p>This is only shared with the helper you hire.</p></TooltipContent>
+                    </Tooltip>
+                 </TooltipProvider>
+            </h4>
+             <div className="grid md:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="flatNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Flat/House No.</FormLabel>
+                      <FormControl><Input placeholder="Apt #123" {...field} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                 <FormField
+                  control={form.control}
+                  name="street"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Street Name</FormLabel>
+                      <FormControl><Input placeholder="Main St" {...field} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+            </div>
+            <FormField
+              control={form.control}
+              name="landmark"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Landmark (Optional)</FormLabel>
+                  <FormControl><Input placeholder="Near Central Park" {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 items-start">
-          <FormField
+
+        <Separator />
+        <h3 className="text-lg font-medium font-headline">Budget & Payment</h3>
+
+        <FormField
+          control={form.control}
+          name="budgetType"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Budget Type</FormLabel>
+              <RadioGroup
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+                className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2"
+              >
+                <FormItem>
+                  <FormControl>
+                    <RadioGroupItem value="fixed" id="fixed" hidden/>
+                  </FormControl>
+                  <FormLabel htmlFor="fixed" className={cn("block p-4 border rounded-md cursor-pointer", budgetType === 'fixed' && "border-primary ring-2 ring-primary")}>
+                    <h4 className="font-semibold">Fixed Price</h4>
+                    <p className="text-sm text-muted-foreground">"I will pay a set amount for this task."</p>
+                  </FormLabel>
+                </FormItem>
+                 <FormItem>
+                  <FormControl>
+                    <RadioGroupItem value="hourly" id="hourly" hidden/>
+                  </FormControl>
+                  <FormLabel htmlFor="hourly" className={cn("block p-4 border rounded-md cursor-pointer", budgetType === 'hourly' && "border-primary ring-2 ring-primary")}>
+                    <h4 className="font-semibold">Hourly Rate</h4>
+                    <p className="text-sm text-muted-foreground">"I will pay based on hours worked."</p>
+                  </FormLabel>
+                </FormItem>
+                 <FormItem>
+                  <FormControl>
+                    <RadioGroupItem value="bids" id="bids" hidden/>
+                  </FormControl>
+                  <FormLabel htmlFor="bids" className={cn("block p-4 border rounded-md cursor-pointer", budgetType === 'bids' && "border-primary ring-2 ring-primary")}>
+                    <h4 className="font-semibold">Open for Bids</h4>
+                    <p className="text-sm text-muted-foreground">"Helpers can make me offers."</p>
+                  </FormLabel>
+                </FormItem>
+              </RadioGroup>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        {budgetType !== 'bids' && (
+           <FormField
             control={form.control}
             name="budget"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Budget ($)</FormLabel>
+                <FormLabel>{budgetType === 'fixed' ? "Fixed Price ($)" : "Hourly Rate ($/hr)"}</FormLabel>
                 <div className="flex gap-2">
                     <FormControl>
-                      <Input type="number" placeholder="50" {...field} />
+                      <Input type="number" placeholder={budgetType === 'fixed' ? 'e.g., 50' : 'e.g., 15'} {...field} />
                     </FormControl>
-                    <Button type="button" variant="outline" onClick={onSuggestPrice} disabled={isPending}>
-                        {isPending ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                            <Sparkles className="h-4 w-4" />
-                        )}
-                        <span className="ml-2 hidden sm:inline">Suggest Price</span>
-                    </Button>
+                    {budgetType === 'fixed' && (
+                        <Button type="button" variant="outline" onClick={onSuggestPrice} disabled={isPending}>
+                            {isPending ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                                <Sparkles className="h-4 w-4" />
+                            )}
+                            <span className="ml-2 hidden sm:inline">Suggest Price</span>
+                        </Button>
+                    )}
                 </div>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="workers"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Number of Workers</FormLabel>
-                <FormControl>
-                  <Input type="number" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+        )}
         
         {suggestion && (
           <Alert>
@@ -253,6 +541,29 @@ export function CreateTaskForm() {
             </AlertDescription>
           </Alert>
         )}
+
+        <FormField
+          control={form.control}
+          name="paymentMethod"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Payment Method</FormLabel>
+               <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="How will you pay?" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="wallet">Online Wallet (Recommended)</SelectItem>
+                    <SelectItem value="cod">Cash on Delivery (COD)</SelectItem>
+                  </SelectContent>
+                </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
 
         <Button type="submit" size="lg" className="w-full">
           Post Task
