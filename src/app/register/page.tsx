@@ -7,6 +7,7 @@ import {
   updateProfile,
   GoogleAuthProvider,
   signInWithPopup,
+  AuthError,
 } from 'firebase/auth';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -90,15 +91,21 @@ export default function RegisterPage() {
       
       toast({
         title: 'Registration Successful',
-        description: "Welcome! Please complete your profile verification.",
+        description: "Welcome! You can now log in.",
       });
       form.reset();
-      router.push('/dashboard');
+      router.push('/login');
     } catch (error: any) {
+      let description = 'An unexpected error occurred. Please try again.';
+      if (error instanceof AuthError) {
+        if (error.code === 'auth/email-already-in-use') {
+          description = 'This email address is already in use. Please use a different email or log in.';
+        }
+      }
       toast({
         variant: 'destructive',
         title: 'Registration Failed',
-        description: error.message,
+        description: description,
       });
     }
   };
@@ -116,7 +123,7 @@ export default function RegisterPage() {
       toast({
         variant: 'destructive',
         title: 'Google Sign Up Failed',
-        description: error.message,
+        description: 'There was a problem signing up with Google. Please try again.',
       });
     }
   };

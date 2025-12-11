@@ -6,6 +6,7 @@ import {
   signInWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithPopup,
+  AuthError,
 } from 'firebase/auth';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -62,7 +63,7 @@ export default function LoginPage() {
       toast({
         variant: 'destructive',
         title: 'Login Failed',
-        description: error.message,
+        description: 'Invalid credentials. Please check your email and password.',
       });
     }
   };
@@ -80,7 +81,7 @@ export default function LoginPage() {
       toast({
         variant: 'destructive',
         title: 'Google Login Failed',
-        description: error.message,
+        description: 'There was a problem signing in with Google. Please try again.',
       });
     }
   };
