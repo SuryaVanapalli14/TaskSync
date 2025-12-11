@@ -14,8 +14,7 @@ import { Separator } from "@/components/ui/separator";
 import withAuth from "@/components/withAuth";
 
 function TaskDetailPage({ params }: { params: { id: string } }) {
-  const taskId = params.id;
-  const task = tasks.find((t) => t.id === taskId);
+  const task = tasks.find((t) => t.id === params.id);
 
   if (!task) {
     notFound();
