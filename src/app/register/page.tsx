@@ -30,26 +30,36 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import {
-  RadioGroup,
-  RadioGroupItem,
-} from '@/components/ui/radio-group';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
-import { LiveSelfie } from './live-selfie';
+import { Icons } from '@/components/icons';
 
-const formSchema = z.object({
-  legalFullName: z.string().min(1, 'Full legal name is required.'),
-  email: z.string().email('Invalid email address.'),
-  password: z.string().min(6, 'Password must be at least 6 characters.'),
-  role: z.enum(['helper', 'requester'], {
-    required_error: 'You must select a role.',
-  }),
-  govtId: z.any().optional(),
-  userPhoto: z.any().optional(),
-  selfie: z.any().optional(),
-});
+const formSchema = z
+  .object({
+    firstName: z.string().min(1, 'First name is required.'),
+    lastName: z.string().min(1, 'Last name is required.'),
+    email: z.string().email('Invalid email address.'),
+    password: z.string().min(8, 'Password must be at least 8 characters.'),
+    confirmPassword: z.string(),
+    agreement: z
+      .boolean()
+      .refine((val) => val === true, {
+        message: 'You must accept the user agreement and license.',
+      }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match.",
+    path: ['confirmPassword'],
+  });
 
 type FormValues = z.infer<typeof formSchema>;
+
+const GoogleIcon = () => (
+    <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2">
+        <path d="M12.48 10.92v3.28h7.84c-.24 1.84-.85 3.18-1.73 4.1-1.02 1.02-2.6 1.6-4.66 1.6-3.86 0-6.99-3.14-6.99-7s3.13-7 6.99-7c2.09 0 3.63.79 4.61 1.75l2.76-2.76C19.33 3.79 16.38 3 12.48 3 7.03 3 3 7.03 3 12s4.03 9 9.48 9c2.82 0 5.12-1.02 6.82-2.72 1.77-1.75 2.34-4.25 2.34-6.49 0-.67-.05-1.32-.16-1.96h-9.18z"/>
+    </svg>
+);
+
 
 export default function RegisterPage() {
   const auth = useAuth();
@@ -59,10 +69,12 @@ export default function RegisterPage() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      legalFullName: '',
+      firstName: '',
+      lastName: '',
       email: '',
       password: '',
-      role: 'helper',
+      confirmPassword: '',
+      agreement: false,
     },
   });
 
@@ -74,16 +86,16 @@ export default function RegisterPage() {
         values.password
       );
       await updateProfile(userCredential.user, {
-        displayName: values.legalFullName,
+        displayName: `${values.firstName} ${values.lastName}`,
       });
       
-      // Here you would typically also save the user's role and verification documents to Firestore
-      
+      // The new user would now be redirected to the internal verification flow.
+      // For now, we'll redirect to the dashboard.
       toast({
         title: 'Registration Successful',
-        description: "You've successfully created an account. Please await verification.",
+        description: "Your account has been created. Please complete the verification steps.",
       });
-      router.push('/dashboard');
+      router.push('/dashboard'); // This should eventually go to a /verify page
     } catch (error: any) {
       toast({
         variant: 'destructive',
@@ -97,11 +109,11 @@ export default function RegisterPage() {
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider);
-       // Here you would typically check if the user is new and if so,
-       // prompt them for their role and verification documents, then save to Firestore.
+       // The new user would now be redirected to the internal verification flow.
+       // For now, we'll redirect to the dashboard.
       toast({
         title: 'Sign Up Successful',
-        description: 'Welcome to TaskSync! Please complete your profile for verification.',
+        description: 'Welcome! Please complete your profile for verification.',
       });
       router.push('/dashboard');
     } catch (error: any) {
@@ -117,27 +129,43 @@ export default function RegisterPage() {
     <div className="flex items-center justify-center min-h-[calc(100vh-10rem)] py-12">
       <Card className="mx-auto max-w-lg w-full">
         <CardHeader>
-          <CardTitle className="text-xl font-headline">Create a Secure Account</CardTitle>
+          <CardTitle className="text-xl font-headline">Create an Account</CardTitle>
           <CardDescription>
-            Your safety is our priority. Please provide the following information for verification.
+            Join TaskSync today to find help or get work done.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleRegister)} className="grid gap-4">
-              <FormField
-                control={form.control}
-                name="legalFullName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Legal Full Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="John Doe" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="firstName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>First Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="John" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="lastName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Last Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Doe" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
               <FormField
                 control={form.control}
                 name="email"
@@ -155,6 +183,7 @@ export default function RegisterPage() {
                   </FormItem>
                 )}
               />
+              
               <FormField
                 control={form.control}
                 name="password"
@@ -171,14 +200,13 @@ export default function RegisterPage() {
 
               <FormField
                 control={form.control}
-                name="govtId"
+                name="confirmPassword"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Government-provided ID</FormLabel>
+                    <FormLabel>Confirm Password</FormLabel>
                     <FormControl>
-                      <Input type="file" accept="image/*" onChange={(e) => field.onChange(e.target.files?.[0])} />
+                      <Input type="password" {...field} />
                     </FormControl>
-                    <FormDescription>For cross-checking purposes. Your data is kept private.</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -186,63 +214,28 @@ export default function RegisterPage() {
 
               <FormField
                 control={form.control}
-                name="userPhoto"
+                name="agreement"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Clear Photo of Your Face</FormLabel>
-                    <FormControl>
-                       <Input type="file" accept="image/*" onChange={(e) => field.onChange(e.target.files?.[0])} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="selfie"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Live Selfie Verification</FormLabel>
-                    <FormControl>
-                      <LiveSelfie onSelfieTaken={field.onChange} />
-                    </FormControl>
-                    <FormDescription>To verify you are a real person.</FormDescription>
-                    <FormMessage />
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                     <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel>
+                        Agree to our terms and conditions
+                      </FormLabel>
+                      <FormDescription>
+                        You agree to our User Agreement, Privacy Policy, and License.
+                      </FormDescription>
+                       <FormMessage />
+                    </div>
                   </FormItem>
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="role"
-                render={({ field }) => (
-                  <FormItem className="space-y-3">
-                    <FormLabel>I want to...</FormLabel>
-                    <FormControl>
-                      <RadioGroup
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        className="flex space-x-4"
-                      >
-                        <FormItem className="flex items-center space-x-2">
-                          <FormControl>
-                            <RadioGroupItem value="helper" id="r-helper" />
-                          </FormControl>
-                          <FormLabel htmlFor="r-helper" className="font-normal">Find work (Helper)</FormLabel>
-                        </FormItem>
-                        <FormItem className="flex items-center space-x-2">
-                          <FormControl>
-                            <RadioGroupItem value="requester" id="r-requester" />
-                          </FormControl>
-                          <FormLabel htmlFor="r-requester" className="font-normal">Post tasks (Requester)</FormLabel>
-                        </FormItem>
-                      </RadioGroup>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
               <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
                 {form.formState.isSubmitting ? 'Creating account...' : 'Create an account'}
               </Button>
@@ -259,6 +252,7 @@ export default function RegisterPage() {
             </div>
           </div>
           <Button variant="outline" className="w-full" onClick={handleGoogleSignUp}>
+            <GoogleIcon />
             Sign up with Google
           </Button>
           <div className="mt-4 text-center text-sm">
