@@ -1,12 +1,13 @@
 
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { format } from "date-fns";
-import { Calendar as CalendarIcon, Sparkles, Loader2, Image as ImageIcon, Video, Info } from "lucide-react";
+import { Calendar as CalendarIcon, Sparkles, Loader2, Image as ImageIcon, Video, Info, X } from "lucide-react";
+import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -34,7 +35,9 @@ import type { SuggestTaskPriceOutput } from "@/ai/flows/suggest-task-price";
 import { Separator } from "@/components/ui/separator";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
+
+const MAX_PHOTOS = 5;
 
 const formSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters long.").max(50, "Title must be 50 characters or less."),
@@ -67,6 +70,8 @@ export function CreateTaskForm() {
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
   const [suggestion, setSuggestion] = useState<SuggestTaskPriceOutput | null>(null);
+  const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
+  const [videoPreview, setVideoPreview] = useState<string | null>(null);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -89,6 +94,17 @@ export function CreateTaskForm() {
   const datePreference = form.watch("datePreference");
   const budgetType = form.watch("budgetType");
 
+  // Cleanup object URLs to avoid memory leaks
+  useEffect(() => {
+    return () => {
+      photoPreviews.forEach(url => URL.revokeObjectURL(url));
+      if (videoPreview) {
+        URL.revokeObjectURL(videoPreview);
+      }
+    };
+  }, [photoPreviews, videoPreview]);
+
+
   function onSubmit(values: FormValues) {
     console.log(values);
     toast({
@@ -97,6 +113,8 @@ export function CreateTaskForm() {
     });
     form.reset();
     setSuggestion(null);
+    setPhotoPreviews([]);
+    setVideoPreview(null);
   }
 
   function onSuggestPrice() {
@@ -137,6 +155,64 @@ export function CreateTaskForm() {
           description: "We've suggested a price based on the task details.",
         });
       }
+    });
+  }
+
+  const handlePhotoChange = (event: React.ChangeEvent<HTMLInputElement>, fieldChange: (files: FileList | null) => void) => {
+    const files = event.target.files;
+    if (files) {
+      if (files.length > MAX_PHOTOS) {
+          toast({
+              variant: "destructive",
+              title: `You can only upload a maximum of ${MAX_PHOTOS} photos.`
+          });
+          // Reset file input
+          event.target.value = '';
+          return;
+      }
+
+      fieldChange(files);
+      const newPreviews = Array.from(files).map(file => URL.createObjectURL(file));
+      setPhotoPreviews(prev => {
+        prev.forEach(url => URL.revokeObjectURL(url));
+        return newPreviews;
+      });
+    }
+  };
+
+  const handleVideoChange = (event: React.ChangeEvent<HTMLInputElement>, fieldChange: (file: File | null) => void) => {
+    const file = event.target.files?.[0] || null;
+    fieldChange(file);
+    setVideoPreview(prev => {
+      if (prev) {
+        URL.revokeObjectURL(prev);
+      }
+      return file ? URL.createObjectURL(file) : null;
+    });
+  };
+
+  const removePhoto = (index: number) => {
+    const currentFiles = form.getValues('photos') as FileList | undefined;
+    if(currentFiles) {
+        const newFiles = new DataTransfer();
+        Array.from(currentFiles).forEach((file, i) => {
+            if(i !== index) newFiles.items.add(file);
+        });
+        form.setValue('photos', newFiles.files, { shouldValidate: true });
+    }
+    setPhotoPreviews(previews => {
+        const newPreviews = [...previews];
+        URL.revokeObjectURL(newPreviews[index]);
+        newPreviews.splice(index, 1);
+        return newPreviews;
+    });
+  }
+  
+  const removeVideo = () => {
+    form.setValue('video', null, { shouldValidate: true });
+    setVideoPreview(prev => {
+      if (prev) URL.revokeObjectURL(prev);
+      return null;
     });
   }
 
@@ -188,10 +264,22 @@ export function CreateTaskForm() {
                   <ImageIcon /> Photos (Optional)
                 </FormLabel>
                 <FormControl>
-                  <Input type="file" accept="image/*" multiple onChange={(e) => onChange(e.target.files)} {...fieldProps} />
+                  <Input type="file" accept="image/*" multiple onChange={(e) => handlePhotoChange(e, onChange)} {...fieldProps} />
                 </FormControl>
                 <FormDescription>Upload up to 5 images.</FormDescription>
                 <FormMessage />
+                {photoPreviews.length > 0 && (
+                  <div className="grid grid-cols-3 gap-2 mt-4">
+                    {photoPreviews.map((src, index) => (
+                      <div key={index} className="relative aspect-square">
+                        <Image src={src} alt={`Preview ${index + 1}`} fill className="rounded-md object-cover"/>
+                         <Button type="button" size="icon" variant="destructive" className="absolute -top-2 -right-2 h-6 w-6 rounded-full" onClick={() => removePhoto(index)}>
+                            <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </FormItem>
             )}
           />
@@ -204,10 +292,18 @@ export function CreateTaskForm() {
                   <Video /> Video (Optional)
                 </FormLabel>
                 <FormControl>
-                  <Input type="file" accept="video/mp4,video/quicktime" onChange={(e) => onChange(e.target.files?.[0])} {...fieldProps} />
+                  <Input type="file" accept="video/mp4,video/quicktime" onChange={(e) => handleVideoChange(e, onChange)} {...fieldProps} />
                 </FormControl>
                  <FormDescription>A short 15-second video.</FormDescription>
                 <FormMessage />
+                 {videoPreview && (
+                  <div className="relative aspect-video mt-4">
+                    <video src={videoPreview} controls className="w-full h-full rounded-md object-cover" />
+                     <Button type="button" size="icon" variant="destructive" className="absolute -top-2 -right-2 h-6 w-6 rounded-full" onClick={removeVideo}>
+                        <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
               </FormItem>
             )}
           />
@@ -574,5 +670,7 @@ export function CreateTaskForm() {
     </Form>
   );
 }
+
+    
 
     
