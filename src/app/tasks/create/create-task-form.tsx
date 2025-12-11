@@ -78,8 +78,13 @@ export function CreateTaskForm() {
     defaultValues: {
       title: "",
       description: "",
+      photos: undefined,
+      video: undefined,
       urgency: "flexible",
       datePreference: "specific",
+      specificDate: undefined,
+      dateRangeStart: undefined,
+      dateRangeEnd: undefined,
       estimatedDuration: "",
       flatNumber: "",
       street: "",
@@ -198,7 +203,7 @@ export function CreateTaskForm() {
         Array.from(currentFiles).forEach((file, i) => {
             if(i !== index) newFiles.items.add(file);
         });
-        form.setValue('photos', newFiles.files, { shouldValidate: true });
+        form.setValue('photos', newFiles.files.length > 0 ? newFiles.files : undefined, { shouldValidate: true });
     }
     setPhotoPreviews(previews => {
         const newPreviews = [...previews];
@@ -209,7 +214,7 @@ export function CreateTaskForm() {
   }
   
   const removeVideo = () => {
-    form.setValue('video', null, { shouldValidate: true });
+    form.setValue('video', undefined, { shouldValidate: true });
     setVideoPreview(prev => {
       if (prev) URL.revokeObjectURL(prev);
       return null;
@@ -258,7 +263,7 @@ export function CreateTaskForm() {
           <FormField
             control={form.control}
             name="photos"
-            render={({ field: { onChange, ...fieldProps } }) => (
+            render={({ field: { onChange, value, ...fieldProps } }) => (
               <FormItem>
                 <FormLabel className="flex items-center gap-2">
                   <ImageIcon /> Photos (Optional)
@@ -286,7 +291,7 @@ export function CreateTaskForm() {
           <FormField
             control={form.control}
             name="video"
-            render={({ field: { onChange, ...fieldProps } }) => (
+            render={({ field: { onChange, value, ...fieldProps } }) => (
               <FormItem>
                 <FormLabel className="flex items-center gap-2">
                   <Video /> Video (Optional)
@@ -593,7 +598,7 @@ export function CreateTaskForm() {
                   </FormControl>
                   <FormLabel htmlFor="bids" className={cn("block p-4 border rounded-md cursor-pointer", budgetType === 'bids' && "border-primary ring-2 ring-primary")}>
                     <h4 className="font-semibold">Open for Bids</h4>
-                    <p className="text-sm text-muted-foreground">"Helpers can make me offers."</p>
+                    <p className="text-sm text-muted-foreground">"Helpers can make me an offer."</p>
                   </FormLabel>
                 </FormItem>
               </RadioGroup>
@@ -670,7 +675,3 @@ export function CreateTaskForm() {
     </Form>
   );
 }
-
-    
-
-    
