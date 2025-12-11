@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useTransition } from "react";
@@ -81,6 +82,7 @@ export function CreateTaskForm() {
       approximateLocation: "",
       budgetType: "fixed",
       paymentMethod: "wallet",
+      budget: undefined,
     },
   });
 
@@ -572,3 +574,5 @@ export function CreateTaskForm() {
     </Form>
   );
 }
+
+    
