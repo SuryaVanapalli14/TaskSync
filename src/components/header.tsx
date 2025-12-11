@@ -79,6 +79,19 @@ export function Header() {
                 {link.label}
               </Link>
             ))}
+             {user && (
+              <Link
+                href="/dashboard"
+                className={cn(
+                  'transition-colors hover:text-foreground/80',
+                  pathname === '/dashboard'
+                    ? 'text-foreground'
+                    : 'text-foreground/60'
+                )}
+              >
+                User Dashboard
+              </Link>
+            )}
           </nav>
         </div>
 
@@ -123,7 +136,7 @@ export function Header() {
                             : 'text-foreground/60'
                         )}
                       >
-                        Dashboard
+                        User Dashboard
                       </Link>
                      </SheetClose>
                     )}

@@ -258,7 +258,7 @@ export function CreateTaskForm() {
 
         <Separator />
 
-        <div className="space-y-6 rounded-md border p-6 bg-secondary/30">
+        <div className="space-y-6 rounded-md border p-6 bg-gradient-to-br from-secondary/30 to-background">
           <h3 className="text-lg font-medium font-headline">Visuals & Urgency</h3>
           <div className="grid md:grid-cols-2 gap-8">
             <FormField
@@ -359,7 +359,7 @@ export function CreateTaskForm() {
         
         <Separator />
 
-        <div className="space-y-6 rounded-md border p-6 bg-secondary/30">
+        <div className="space-y-6 rounded-md border p-6 bg-gradient-to-br from-secondary/30 to-background">
           <h3 className="text-lg font-medium font-headline">Scheduling & Duration</h3>
           <FormField
             control={form.control}
@@ -500,7 +500,7 @@ export function CreateTaskForm() {
 
         <Separator />
 
-        <div className="space-y-6 rounded-md border p-6 bg-secondary/30">
+        <div className="space-y-6 rounded-md border p-6 bg-gradient-to-br from-secondary/30 to-background">
           <h3 className="text-lg font-medium font-headline">Location Details</h3>
           <FormField
             control={form.control}
@@ -567,7 +567,7 @@ export function CreateTaskForm() {
 
         <Separator />
 
-        <div className="space-y-6 rounded-md border p-6 bg-secondary/30">
+        <div className="space-y-6 rounded-md border p-6 bg-gradient-to-br from-secondary/30 to-background">
           <h3 className="text-lg font-medium font-headline">Budget & Payment</h3>
           <FormField
             control={form.control}
